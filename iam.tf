@@ -18,8 +18,8 @@ data "aws_iam_policy_document" "vpc_auto_peering_role_policy" {
 }
 
 resource "aws_iam_policy" "vpc_auto_auto_peering_policy" {
-  name = "vpc-auto-peering-policy-${var.region}-${var.deployment_identifier}"
-  description = "vpc-auto-peering-policy-${var.region}-${var.deployment_identifier}"
+  name = "vpc-auto-peering-policy"
+  description = "vpc-auto-peering-policy"
   policy = data.aws_iam_policy_document.vpc_auto_peering_role_policy.json
 }
 
@@ -27,7 +27,7 @@ module "cross_account_role" {
   source = "infrablocks/cross-account-role/aws"
   version = "0.2.0"
 
-  role_name = "vpc-auto-peering-role-${var.region}-${var.deployment_identifier}"
+  role_name = "vpc-auto-peering-role"
   policy_arn = aws_iam_policy.vpc_auto_auto_peering_policy.arn
   assumable_by_account_ids = var.assumable_by_account_ids
 }
