@@ -3,88 +3,56 @@ require 'spec_helper'
 describe 'IAM policies, profiles and roles' do
   let(:region) { vars.region }
   let(:deployment_identifier) { vars.deployment_identifier }
+  let(:role_arn) { output_for(:harness, 'role_arn') }
+  let(:assumable_by_account_ids) { vars.assumable_by_account_ids }
 
-  context 'auto peering role' do
+  context 'vpc auto peering role' do
     subject {
-      iam_role("auto-peering-role-#{region}-#{deployment_identifier}")
+      iam_role(role_arn)
     }
 
-    it {should exist}
+    it { should exist }
 
-    it 'allows assuming a role of lambda' do
-      policy_document = JSON.parse(
-          URI.decode(subject.assume_role_policy_document))
-      expect(policy_document["Statement"].count).to(eq(1))
+    it 'should be assumable by the provided accounts' do
+      actual = JSON.parse(
+          URI.decode(subject.assume_role_policy_document),
+          symbolize_names: true)
+      expected = {
+          Version: "2012-10-17",
+          Statement: [
+              {
+                  Sid: "",
+                  Effect: "Allow",
+                  Action: "sts:AssumeRole",
+                  Principal: {
+                      AWS: "arn:aws:iam::#{assumable_by_account_ids[0]}:root"
+                  }
+              }
+          ]
+      }
 
-      policy_document_statement = policy_document["Statement"].first
-
-      expect(policy_document_statement['Effect']).to(eq('Allow'))
-      expect(policy_document_statement['Action']).to(eq('sts:AssumeRole'))
-      expect(policy_document_statement['Principal']['Service'])
-          .to(eq('lambda.amazonaws.com'))
+      expect(actual).to(eq(expected))
     end
 
-    it {
-      should have_iam_policy(
-                 "auto-peering-policy-#{region}-#{deployment_identifier}")
-    }
-  end
-
-  context 'auto peering policy' do
-    subject {
-      iam_policy("auto-peering-policy-#{region}-#{deployment_identifier}")
-    }
-
-    let(:policy_document) do
-      policy_version_response = iam_client.get_policy_version({
-          policy_arn: subject.arn,
-          version_id: subject.default_version_id,
-      })
-
-      JSON.parse(URI.decode(
-          policy_version_response.policy_version.document))
+    it 'is allowed to manage vpc peering connections' do
+      expect(subject).to(be_allowed_action('ec2:AcceptVpcPeeringConnection'))
+      expect(subject).to(be_allowed_action('ec2:CreateVpcPeeringConnection'))
+      expect(subject).to(be_allowed_action('ec2:DeleteVpcPeeringConnection'))
+      expect(subject).to(be_allowed_action('ec2:DescribeVpcPeeringConnections'))
     end
 
-    it {should exist}
-
-    it 'allows EC2 actions' do
-      expect(policy_document["Statement"].count).to(eq(1))
-
-      policy_document_statement = policy_document["Statement"].first
-      expect(policy_document_statement['Effect']).to(eq('Allow'))
-      expect(policy_document_statement['Resource']).to(eq('*'))
-      expect(policy_document_statement['Action'])
-          .to(include('ec2:AcceptVpcPeeringConnection'))
-      expect(policy_document_statement['Action'])
-          .to(include('ec2:CreateVpcPeeringConnection'))
-      expect(policy_document_statement['Action'])
-          .to(include('ec2:DeleteVpcPeeringConnection'))
-      expect(policy_document_statement['Action'])
-          .to(include('ec2:DescribeVpcPeeringConnections'))
-      expect(policy_document_statement['Action'])
-          .to(include('ec2:CreateRoute'))
-      expect(policy_document_statement['Action'])
-          .to(include('ec2:DeleteRoute'))
-      expect(policy_document_statement['Action'])
-          .to(include('ec2:DescribeRouteTables'))
-      expect(policy_document_statement['Action'])
-          .to(include('ec2:DescribeTags'))
-      expect(policy_document_statement['Action'])
-          .to(include('ec2:DescribeVpcs'))
+    it 'is allowed to manage routes' do
+      expect(subject).to(be_allowed_action('ec2:CreateRoute'))
+      expect(subject).to(be_allowed_action('ec2:DeleteRoute'))
+      expect(subject).to(be_allowed_action('ec2:DescribeRouteTables'))
     end
 
-    it 'allows log creation' do
-      expect(policy_document["Statement"].count).to(eq(1))
+    it 'is allowed to read tags' do
+      expect(subject).to(be_allowed_action('ec2:DescribeTags'))
+    end
 
-      policy_document_statement = policy_document["Statement"].first
-      expect(policy_document_statement['Effect']).to(eq('Allow'))
-      expect(policy_document_statement['Resource']).to(eq('*'))
-      expect(policy_document_statement['Action'])
-          .to(include('logs:CreateLogStream'))
-      expect(policy_document_statement['Action'])
-          .to(include('logs:CreateLogGroup'))
-      expect(policy_document_statement['Action'])
-          .to(include('logs:PutLogEvents'))
+    it 'is allowed to read vpcs' do
+      expect(subject).to(be_allowed_action('ec2:DescribeVpcs'))
     end
   end
 end

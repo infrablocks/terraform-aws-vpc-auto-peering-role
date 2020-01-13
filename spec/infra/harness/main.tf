@@ -6,11 +6,11 @@ data "terraform_remote_state" "prerequisites" {
   }
 }
 
-module "vpc_auto_peering" {
+module "vpc_auto_peering_role" {
   source = "../../../../"
 
   region = var.region
   deployment_identifier = var.deployment_identifier
 
-  infrastructure_events_topic_arn = data.terraform_remote_state.prerequisites.outputs.infrastructure_events_topic_arn
+  assumable_by_account_ids = var.assumable_by_account_ids
 }

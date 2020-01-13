@@ -1,22 +1,4 @@
-data "aws_iam_policy_document" "auto_peering_assume_role_policy" {
-  statement {
-    effect = "Allow"
-
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      identifiers = ["lambda.amazonaws.com"]
-      type = "Service"
-    }
-  }
-}
-
-resource "aws_iam_role" "auto_peering" {
-  name = "auto-peering-role-${var.region}-${var.deployment_identifier}"
-  assume_role_policy = data.aws_iam_policy_document.auto_peering_assume_role_policy.json
-}
-
-data "aws_iam_policy_document" "auto_peering_role_policy" {
+data "aws_iam_policy_document" "vpc_auto_peering_role_policy" {
   statement {
     effect = "Allow"
     resources = ["*"]
@@ -30,22 +12,22 @@ data "aws_iam_policy_document" "auto_peering_role_policy" {
       "ec2:DeleteRoute",
       "ec2:DescribeRouteTables",
       "ec2:DescribeTags",
-      "ec2:DescribeVpcs",
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents"
+      "ec2:DescribeVpcs"
     ]
   }
 }
 
-resource "aws_iam_policy" "auto_peering" {
-  name = "auto-peering-policy-${var.region}-${var.deployment_identifier}"
-  description = "auto-peering-policy-${var.region}-${var.deployment_identifier}"
-  policy = data.aws_iam_policy_document.auto_peering_role_policy.json
+resource "aws_iam_policy" "vpc_auto_auto_peering_policy" {
+  name = "vpc-auto-peering-policy-${var.region}-${var.deployment_identifier}"
+  description = "vpc-auto-peering-policy-${var.region}-${var.deployment_identifier}"
+  policy = data.aws_iam_policy_document.vpc_auto_peering_role_policy.json
 }
 
-resource "aws_iam_policy_attachment" "auto_peering" {
-  name = "auto-peering-policy-attachment-${var.region}-${var.deployment_identifier}"
-  roles = [aws_iam_role.auto_peering.id]
-  policy_arn = aws_iam_policy.auto_peering.arn
+module "cross_account_role" {
+  source = "infrablocks/cross-account-role/aws"
+  version = "0.2.0"
+
+  role_name = "vpc-auto-peering-role-${var.region}-${var.deployment_identifier}"
+  policy_arn = aws_iam_policy.vpc_auto_auto_peering_policy.arn
+  assumable_by_account_ids = var.assumable_by_account_ids
 }
