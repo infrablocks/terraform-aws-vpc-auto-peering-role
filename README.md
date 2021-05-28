@@ -24,6 +24,9 @@ module "vpc-auto-peering" {
 }
 ```
 
+See the 
+[Terraform registry entry](https://registry.terraform.io/modules/infrablocks/vpc-auto-peering-role/aws/latest) 
+for more details.
 
 ### Inputs
 
@@ -40,14 +43,18 @@ module "vpc-auto-peering" {
 | Name                         | Description                                          |
 |------------------------------|------------------------------------------------------|
 
+### Compatibility
+
+This module is compatible with Terraform versions greater than or equal to 
+Terraform 0.14.
 
 Development
 -----------
 
 ### Machine Requirements
 
-In order for the build to run correctly, a few tools will need to be installed on your
-development machine:
+In order for the build to run correctly, a few tools will need to be installed 
+on your development machine:
 
 * Ruby (2.3.1)
 * Bundler
@@ -96,8 +103,8 @@ direnv allow <repository-directory>
 
 ### Running the build
 
-To provision module infrastructure, run tests and then destroy that infrastructure,
-execute:
+To provision module infrastructure, run tests and then destroy that 
+infrastructure, execute:
 
 ```bash
 ./go
@@ -187,12 +194,15 @@ openssl aes-256-cbc \
 Contributing
 ------------
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/tobyclemson/terraform-aws-vpc-auto-peering. 
-This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to 
+Bug reports and pull requests are welcome on GitHub at 
+https://github.com/infrablocks/terraform-aws-vpc-auto-peering.
+This project is intended to be a safe, welcoming space for collaboration, and 
+contributors are expected to adhere to 
 the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 
 License
 -------
 
-The library is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+The library is available as open source under the terms of the 
+[MIT License](http://opensource.org/licenses/MIT).
