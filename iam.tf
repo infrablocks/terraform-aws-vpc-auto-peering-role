@@ -25,7 +25,7 @@ resource "aws_iam_policy" "vpc_auto_auto_peering_policy" {
 
 module "cross_account_role" {
   source = "infrablocks/cross-account-role/aws"
-  version = "1.0.0"
+  version = "1.1.0-rc.5"
 
   role_name = "vpc-auto-peering-role"
   policy_arn = aws_iam_policy.vpc_auto_auto_peering_policy.arn
