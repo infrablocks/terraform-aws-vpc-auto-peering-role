@@ -4,5 +4,5 @@ module "vpc_auto_peering_role" {
   region = var.region
   deployment_identifier = var.deployment_identifier
 
-  assumable_by_account_ids = ["325795806661", "176145454894"]
+  assumable_by_account_ids = ["325795806661"]
 }

@@ -9,12 +9,7 @@ describe 'full' do
   let(:deployment_identifier) do
     var(role: :full, name: 'deployment_identifier')
   end
-  let(:assumable_by_account_ids) do
-    %w[
-      325795806661
-      176145454894
-    ]
-  end
+
   let(:role_arn) do
     output(role: :full, name: 'role_arn')
   end
@@ -49,12 +44,9 @@ describe 'full' do
             Sid: '',
             Effect: 'Allow',
             Action: 'sts:AssumeRole',
-            Principal: a_hash_including(
-              AWS: containing_exactly(
-                "arn:aws:iam::#{assumable_by_account_ids[0]}:root",
-                "arn:aws:iam::#{assumable_by_account_ids[1]}:root"
-              )
-            )
+            Principal: {
+              AWS: "arn:aws:iam::325795806661:root"
+            }
           }
         ]
       }
