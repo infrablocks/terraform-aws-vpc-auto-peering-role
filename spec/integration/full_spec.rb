@@ -49,7 +49,7 @@ describe 'full' do
             Sid: '',
             Effect: 'Allow',
             Action: 'sts:AssumeRole',
-            Principal: containing_exactly(
+            Principal: a_hash_including(
               AWS: containing_exactly(
                 "arn:aws:iam::#{assumable_by_account_ids[0]}:root",
                 "arn:aws:iam::#{assumable_by_account_ids[1]}:root"
