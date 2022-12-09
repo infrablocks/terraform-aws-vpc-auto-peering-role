@@ -49,12 +49,12 @@ describe 'full' do
             Sid: '',
             Effect: 'Allow',
             Action: 'sts:AssumeRole',
-            Principal: {
-              AWS: %W[
-                arn:aws:iam::#{assumable_by_account_ids[0]}:root
-                arn:aws:iam::#{assumable_by_account_ids[1]}:root
-              ]
-            }
+            Principal: containing_exactly(
+              AWS: containing_exactly(
+                "arn:aws:iam::#{assumable_by_account_ids[0]}:root",
+                "arn:aws:iam::#{assumable_by_account_ids[1]}:root"
+              )
+            )
           }
         ]
       }
