@@ -45,7 +45,7 @@ describe 'full' do
             Effect: 'Allow',
             Action: 'sts:AssumeRole',
             Principal: {
-              AWS: "arn:aws:iam::325795806661:root"
+              AWS: 'arn:aws:iam::325795806661:root'
             }
           }
         ]
