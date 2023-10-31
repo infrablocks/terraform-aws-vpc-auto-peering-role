@@ -14,6 +14,7 @@ build/
 dist/
 .bundle
 .rakeTasks
+.direnv
 
 # OS
 .DS_Store
@@ -26,6 +27,9 @@ run/logs/
 
 # RSpec
 .rspec_status
+
+# Python
+__pycache__
 
 # Terraform
 state/
